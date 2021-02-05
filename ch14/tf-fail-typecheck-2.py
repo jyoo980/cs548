@@ -18,7 +18,7 @@ class TypeCheck():
                 actual_type_str = type(args[i + 1]).__name__
                 if type(args[i + 1]) in self._primitives and actual_type_str == expected_type_str:
                     continue
-                if actual_type_str != expected_type_str:
+                if type(args[i + 1]).__name__ != expected_type_str:
                     raise TypeError(f"Expected type: {expected_type_str}, found actual type: {actual_type_str}")
                 # if it's not a primitive, check whether it's of some type we defined
                 if not isinstance(args[i + 1], globals()[self._args[i]]):
@@ -82,7 +82,8 @@ class StopWordManager:
             self._stop_words = f.read().split(',')
         self._stop_words.extend(list(string.ascii_lowercase))
 
-    @TypeCheck("str")
+    # This fails typechecking, since word is a str, not a bool
+    @TypeCheck("float")
     def is_stop_word(self, word):
         return word in self._stop_words
 

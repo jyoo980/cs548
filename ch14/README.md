@@ -48,7 +48,7 @@ class TypeCheck():
                 actual_type_str = type(args[i + 1]).__name__
                 if type(args[i + 1]) in self._primitives and actual_type_str == expected_type_str:
                     continue
-                if type(args[i + 1]).__name__ != expected_type_str:
+                if actual_type_str != expected_type_str:
                     raise TypeError(f"Expected type: {expected_type_str}, found actual type: {actual_type_str}")
                 # if it's not a primitive, check whether it's of some type we defined
                 if not isinstance(args[i + 1], globals()[self._args[i]]):
