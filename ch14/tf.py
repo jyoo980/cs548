@@ -12,8 +12,14 @@ class TypeCheck():
         def wrapped_fn(*args):
             for i in range(len(self._args)):
                 # if it is a primitive value, check whether it belongs to the array we have
-                if self._args[i] == "primitive" and type(args[i + 1]) in self._primitives:
+                # Note, it's args[i + 1] since the first element is always 'self'. 
+                # Nice going, Python
+                expected_type_str = self._args[i]
+                actual_type_str = type(args[i + 1]).__name__
+                if type(args[i + 1]) in self._primitives and actual_type_str == expected_type_str:
                     continue
+                if type(args[i + 1]).__name__ != expected_type_str:
+                    raise TypeError(f"Expected type: {expected_type_str}, found actual type: {actual_type_str}")
                 # if it's not a primitive, check whether it's of some type we defined
                 if not isinstance(args[i + 1], globals()[self._args[i]]):
                     raise TypeError("Wrong type")
@@ -58,7 +64,7 @@ class IWordFrequencyCounter(metaclass=abc.ABCMeta):
 class DataStorageManager:
     _data = ''
 
-    @TypeCheck("primitive")
+    @TypeCheck("str")
     def __init__(self, path_to_file):
         with open(path_to_file) as f:
             self._data = f.read()
@@ -76,13 +82,14 @@ class StopWordManager:
             self._stop_words = f.read().split(',')
         self._stop_words.extend(list(string.ascii_lowercase))
 
+    @TypeCheck("str")
     def is_stop_word(self, word):
         return word in self._stop_words
 
 class WordFrequencyManager:
     _word_freqs = {}
 
-    @TypeCheck("primitive")
+    @TypeCheck("str")
     def increment_count(self, word):
         if word in self._word_freqs:
             self._word_freqs[word] += 1
@@ -104,7 +111,7 @@ IWordFrequencyCounter.register(subclass=WordFrequencyManager)
 #
 class WordFrequencyController:
 
-    @TypeCheck("primitive")
+    @TypeCheck("str")
     def __init__(self, path_to_file):
         self._storage = DataStorageManager(path_to_file)
         self._stop_word_manager = StopWordManager()
