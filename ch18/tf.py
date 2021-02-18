@@ -20,7 +20,7 @@ def frequencies_imp(word_list):
 # 
 def extract_word_impl(path):
     f = open(path)
-    content = f.readlines()
+    content = ''.join(f.readlines())
     f.close()
     return content
 
