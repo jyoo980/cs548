@@ -2,6 +2,29 @@
 import sys, re, operator, string, inspect
 
 #
+# Decorating for encorcing types of return values from method calls
+#
+class ReturnTypes():
+
+    def __init__(self, *args):
+        self._args = args
+
+    def __call__(self, f):
+        def wrapped_f(*args):
+            expected_ret_type = self._args[0].__name__
+            actual_ret_type = self._actual_ret_type(f, args[0])
+            if expected_ret_type != actual_ret_type:
+                err_message = f"Expected type: {expected_ret_type}, but got: {actual_ret_type}"
+                raise TypeError(err_message)
+            return f(*args) 
+        return wrapped_f
+    
+    def _actual_ret_type(self, fn, arg):
+        ret_val = fn(arg)
+        actual_ret_type = type(ret_val).__name__
+        return actual_ret_type
+
+#
 # Decorator for enforcing types of arguments in method calls
 #
 class AcceptTypes():
@@ -19,6 +42,7 @@ class AcceptTypes():
 # The functions
 #
 @AcceptTypes(str)
+@ReturnTypes(list)
 def extract_words(path_to_file):
     with open(path_to_file) as f:
         str_data = f.read()
@@ -30,6 +54,7 @@ def extract_words(path_to_file):
     return [w for w in word_list if not w in stop_words]
 
 @AcceptTypes(list)
+@ReturnTypes(dict)
 def frequencies(word_list):
     word_freqs = {}
     for w in word_list:
@@ -40,6 +65,7 @@ def frequencies(word_list):
     return word_freqs
 
 @AcceptTypes(dict)
+@ReturnTypes(list)
 def sort(word_freq):
     return sorted(word_freq.items(), key=operator.itemgetter(1), reverse=True)
 
