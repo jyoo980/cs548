@@ -29,23 +29,26 @@ def get_input(arg):
         return sys.argv[1]
     return _f
 
-def extract_words(path_to_file):
-    def _f():
-        with open(path_to_file) as f:
-            data = f.read()
-        pattern = re.compile('[\W_]+')
-        word_list = pattern.sub(' ', data).lower().split()
-        return word_list
-    return _f
+# IO function added to read file, given a path
+def read_file(path):
+    f = open(path, "r")
+    return f.read()
 
-def remove_stop_words(word_list):
-    def _f():
-        with open('../stop_words.txt') as f:
-            stop_words = f.read().split(',')
-        # add single-letter words
-        stop_words.extend(list(string.ascii_lowercase))
-        return [w for w in word_list if not w in stop_words]
-    return _f
+def extract_words(data):
+    pattern = re.compile(r'[\W_]+')
+    word_list = pattern.sub(' ', data).lower().split()
+    return word_list
+
+def read_stop_words(word_list):
+    f = open('../stop_words.txt', 'r')
+    stop_words = f.read().split(',')
+    return [word_list, stop_words]
+
+def remove_stop_words(word_list_stop_words):
+    word_list, stop_words = (word_list_stop_words[0], word_list_stop_words[1])
+    # add single-letter words
+    stop_words.extend(list(string.ascii_lowercase))
+    return [w for w in word_list if not w in stop_words]
 
 def frequencies(word_list):
     word_freqs = {}
@@ -69,7 +72,9 @@ def top25_freqs(word_freqs):
 # The main function
 #
 TFQuarantine(get_input)\
+.bind(read_file)\
 .bind(extract_words)\
+.bind(read_stop_words)\
 .bind(remove_stop_words)\
 .bind(frequencies)\
 .bind(sort)\
