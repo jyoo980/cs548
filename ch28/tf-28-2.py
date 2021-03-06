@@ -1,28 +1,17 @@
 #!/usr/bin/env python
 import sys, operator, string
 
-def characters(filename):
+def lines(filename):
     for line in open(filename):
-        for c in line:
-            yield c
+        yield line
 
 def all_words(filename):
-    start_char = True
-    for c in characters(filename):
-        if start_char == True:
-            word = ""
-            if c.isalnum():
-                # We found the start of a word
-                word = c.lower()
-                start_char = False
-            else: pass
-        else:
-            if c.isalnum():
-                word += c.lower()
-            else:
-                # We found end of word, emit it
-                start_char = True
-                yield word
+    words = []
+    for line in lines(filename):
+        whitespace_filtered = [w for w in line.split(' ') if w.isalnum()]
+        words.extend(whitespace_filtered)
+    for word in words:
+        yield word
 
 def non_stop_words(filename):
     stopwords = set(open('../stop_words.txt').read().split(',')  + list(string.ascii_lowercase))
