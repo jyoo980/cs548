@@ -1,4 +1,13 @@
+#!/usr/bin/env/python
+
 from metadata import methods_defined_on
+from reader import Reader
+
+def set_method(obj, type_dict, name, signature, impl):
+    exec(f'{name} = {impl}')
+    obj.__setattr__(name, locals()[name])
+    type_dict.put(name, signature)
+    print(f"Defined method {name} :: {signature}")
 
 class TypeDict:
 
@@ -22,6 +31,16 @@ while True:
         fn_name = input("Method name> ")
         fn_type = input("Type signature> ")
         fn_impl = input("Lambda impl> ")
+        set_method(ct, types, fn_name, fn_type, fn_impl)
+        continue
+    if user_input == "m":
+        # TODO: enable modification
+        continue
+    elif user_input == "l" or user_input == "load":
+        fn_name = input("Method name> ")
+        fn_type = input("Type signature> ")
+        path = input("File name> ")
+        fn_impl = Reader.read_impl(path)
         exec(f'{fn_name} = {fn_impl}')
         ct.__setattr__(fn_name, locals()[fn_name])
         types.put(fn_name, fn_type)
@@ -34,15 +53,17 @@ while True:
             continue
         call_name = input("Method to call> ")
         signature = types.get(call_name)
+        print(f"Calling {call_name} with type: {signature}")
         if not signature.startswith("unit"):
             arg = input("Argument> ")
             arg = eval(arg)
             result = ct.__getattribute__(call_name)(arg)
             if not signature.endswith("unit"):
                 print(result)
-            pass
         else:
-            ct.__getattribute__(call_name)()
+            result = ct.__getattribute__(call_name)()
+            if not signature.endswith("unit"):
+                print(result)
         continue
     elif user_input == "s":
         method_names = methods_defined_on(ct)
