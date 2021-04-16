@@ -34,7 +34,11 @@ while True:
         set_method(ct, types, fn_name, fn_type, fn_impl)
         continue
     if user_input == "m":
-        # TODO: enable modification
+        stored_methods = methods_defined_on(ct)
+        print(f"Methods open for modification: {stored_methods}")
+        fn_name = input("Method name> ")
+        fn_impl = input("New implementation> ")
+        set_method(ct, types, fn_name, types.get(fn_name), fn_impl)
         continue
     elif user_input == "l" or user_input == "load":
         fn_name = input("Method name> ")
@@ -52,6 +56,9 @@ while True:
             print("There are currently no methods available to call")
             continue
         call_name = input("Method to call> ")
+        if call_name not in method_names:
+            print(f"{call_name} is not defined")
+            continue
         signature = types.get(call_name)
         print(f"Calling {call_name} with type: {signature}")
         if not signature.startswith("unit"):
