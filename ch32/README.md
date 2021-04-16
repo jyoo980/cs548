@@ -1,4 +1,4 @@
-# Exercise 32.
+# Exercise 32.3
 
 > Reorganizing the pairs on a per-word basis might be a bit too much parallelism! Change the program so that the regroup function reorganizes the words alphabetically into only five groups: a-e, f-j, k-o, p-t, u-z. Be mindful of what this does to the counting step.
 
